@@ -1,5 +1,5 @@
 [general]
-{% if ansible_os_distribution == 'Ubuntu' %}
+{% if ansible_distribution == 'Ubuntu' %}
 state_file = /var/awlogs/state/agent-state
 {% else %}
 state_file = /var/lib/awslogs/agent-state
