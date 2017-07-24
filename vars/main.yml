@@ -1,3 +1,5 @@
 ---
 # vars file for awslogs
 
+www_directory: /var/www
+

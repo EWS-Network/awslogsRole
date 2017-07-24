@@ -11,3 +11,7 @@ timezone: UTC
 use_time_prefix: True
 initial_start: start_of_file
 file_fingerprint_lines: 1
+
+app_path: "{{ www_directory }}/{{ app_name }}"
+
+nginx_log_dir: "/var/log/nginx"
