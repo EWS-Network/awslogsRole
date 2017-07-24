@@ -13,35 +13,54 @@
   pip: name=boto3 state=latest
   become: yes
   when:
-  - boto_present|failed
+    - boto_present|failed
 
 - name: Set region
-  shell: aws configure set region {{ ansible_ec2_placement_region }}
+  shell: |
+    aws configure set region {{ ansible_ec2_placement_region }}
 
 - name: Install AWS Logs agent
-  yum: name=awslogs state=present
+  yum:
+    name: awslogs
+    state: present
   become: yes
+  when:
+    - ansible_os_family == 'Amazon'
+  tags:
+    - packages
 
 - name: Set destination_folder
-  set_fact: dest_folder="{{ tmp_dir }}"
+  set_fact:
+    dest_folder: "{{ tmp_dir }}"
   when:
-  - not for_real
+    - not for_real
+
+- name: Set config directory for Ubuntu
+  set_fact:
+    dest_folder: "{{ ubuntu_config_dir  }}"
+  when:
+    - ansible_distribution == "Ubuntu"
 
 - name: Set destination_folder
-  set_fact: dest_folder="{{ aws_logs_conf_dir }}"
+  set_fact:
+    dest_folder: "{{ aws_logs_conf_dir }}"
   when:
-  - for_real
+    - for_real
 
 - name: Create AWS Cli configuration file for AWS Logs
-  template: src="{{ aws_cli_conf_file}}.j2" dest="{{ dest_folder }}/{{ aws_cli_conf_file }}"
+  template:
+    src: "{{ aws_cli_conf_file}}.j2"
+    dest: "{{ dest_folder }}/{{ aws_cli_conf_file }}"
   become: yes
 
 - name: Create AWS Logs configuration file
-  template: src="{{ aws_logs_conf_file }}.j2" dest="{{ dest_folder }}/{{ aws_logs_conf_file }}"
+  template:
+    src: "{{ aws_logs_conf_file }}.j2"
+    dest: "{{ dest_folder }}/{{ aws_logs_conf_file }}"
   become: yes
 
 - name: Restart Agent
   service: name=awslogs state=restarted
   become: yes
   when:
-  - for_real
+    - for_real

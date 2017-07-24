@@ -3,3 +3,4 @@
 
 www_directory: /var/www
 
+ubuntu_config_dir: /var/awslogs/etc
